@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  astro-builder:
+    image: node:20
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: sh -c "npm install -g pnpm && pnpm install && pnpm build"
+    environment:
+      - NODE_ENV=production
+
+  astro-web:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./dist:/usr/share/nginx/html:ro
+    depends_on:
+      - astro-builder
+    restart: unless-stopped
